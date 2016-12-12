@@ -22,17 +22,9 @@ int main(int argc, const char * argv[]) {
     
     std::cout<<"                 _________________________________________________"<<std::endl;
     
-    std::cout<<"\n 1.First In First Out"<<std::endl;
+    std::cout<<"\n First In First Out"<<std::endl;
     
-    std::cout<<" 2.Minimum Processing Time"<<std::endl<<std::endl;
-    
-    do
-    {
-        std::cout<<"\tEnter your Policy: ";
-        
-        std::cin>>choice;
-        
-    }while(choice>2||choice<1);
+    choice = 1;
     
     std::cout<<"\nMean Inter arrival Time: "<<Mean_interArrival_Time;
     
@@ -87,9 +79,9 @@ void initialize()
     
     Number_of_Events = 2;      // Arrival , Completion
     
-    Mean_interArrival_Time=1.0;
+    Mean_interArrival_Time=3.0;
     
-    Mean_service_Time=0.5;
+    Mean_service_Time=5.0;
     
     End_Time=100.0;
     
@@ -239,7 +231,7 @@ void Completition()
 }
 
 /////////////////////////////////////////////////////////////////////////
-//Sort Functtion
+//Sort Function
 void Search_Min(double A_time[],double S_time[])
 {
     int Min=1;
@@ -261,7 +253,7 @@ void Search_Min(double A_time[],double S_time[])
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// Generate The Rondom Number
+// Generate The Random Number
 
 float expon(float mean)
 {
