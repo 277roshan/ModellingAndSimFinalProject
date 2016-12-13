@@ -35,7 +35,11 @@ Clock,
 Time_Arrival[Queu_Limit + 1],
 Service_Time[Queu_Limit + 1],
 Next_Arrival_Time,
-Next_Completion_Time,
+Next_Completion_Time,  // for first server
+Next_Completion_Time_Index,
+
+Completion_Time[5], // 5 servers in the array
+Track_State[5],     // 5 servers track state for each BUSY or IDLE
 Next_Service_Time,
 Total_Flow_Time,
 Progres_Arrival_Time,

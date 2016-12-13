@@ -12,6 +12,7 @@
 #include<iostream>
 #include <cmath>
 
+
 //main function
 
 int main(int argc, const char * argv[]) {
@@ -36,6 +37,7 @@ int main(int argc, const char * argv[]) {
     while(true)
     {
         
+        std::cout<<Clock<<"clock"<<std::endl;
         Timing();  // Timing Routine To Determine The Next Event
         
         if(Clock>End_Time)
@@ -87,7 +89,7 @@ void initialize()
     
     Clock = 0.0;
     
-    Server_Status = IDLE;
+    Server_Status = BUSY;  //(TODO:thapaliya) Set to BUSY according to new code
     
     Number_in_Queue = 0;
     
@@ -103,6 +105,20 @@ void initialize()
     
     Next_Completion_Time = 1.0e+10;    // Completing  Guarantening that the first event is arriving
     
+    Next_Completion_Time_Index = 0;
+    
+    for(int i = 0; i<(sizeof(Completion_Time)/sizeof(*Completion_Time));i++){
+        Completion_Time[i] = 1.0e+10;
+        printf("%f\n",Completion_Time[i]);
+    }
+    
+    for(int i = 0; i<(sizeof(Track_State)/sizeof(*Track_State));i++){
+        Track_State[i] = IDLE;
+        printf("%f\n",Track_State[i]);
+    }
+    
+    
+    
     Progres_Arrival_Time=0.0;
     
     Progres_Completion_Time = 0.0;
@@ -113,32 +129,31 @@ void initialize()
 void Timing()
 {
     Type_Next_Event = 0;
-    
-    
-    
+    Next_Completion_Time = 1.0e+10;
     //(TODO: thapaliya)Next_Completion_Time needs to be determined from the array
+    for (int i = 0;i<2;i++){
+        if (Completion_Time[i]<Next_Completion_Time){
+            Next_Completion_Time = Completion_Time[i];
+            std::cout<<Next_Completion_Time<<"pot"<<std::endl;
+            Next_Completion_Time_Index = i;
+        }
+    }
     
     if(Next_Arrival_Time < Next_Completion_Time)
     {
-        
         Type_Next_Event = 1;
-        
         Clock=Next_Arrival_Time;
-        
     }
     
     else
     {
         Type_Next_Event = 2;
-        
         Clock = Next_Completion_Time;
-        
     }
     
     if (Type_Next_Event == 0)
     {
         std::cout<<"\nEvent List Empty at Time: "<<Clock;
-        
         exit(1);
     }
     
@@ -151,10 +166,27 @@ void Arrival()
 {
     
     // (TODO:thapaliya) Server status for each server needs to be busy then add in queue
-    if (Server_Status == BUSY)
+    
+    
+    int check = BUSY;
+    for(int i = 0; i<2 ;i++){
+        if (Track_State[i] == IDLE){
+       
+                Track_State[i] = BUSY;
+                Completion_Time[i] = Clock + Next_Service_Time;
+                // (TODO:thapaliya) Add to array of completion time
+                Progres_Arrival_Time = Next_Arrival_Time;
+                Progres_Completion_Time = Next_Completion_Time;
+                check = IDLE;
+                break;
+ 
+        }
+    }
+    
+    
+    if (check == BUSY)
     {
         ++Number_in_Queue;
-        
         if (Number_in_Queue > Queu_Limit)
         {
             std::cout<<"\nOverflow of the array time_arrival at";
@@ -163,32 +195,11 @@ void Arrival()
             
             exit(2);
         }
-        
         Time_Arrival[Number_in_Queue] = Clock;
-        
         Service_Time[Number_in_Queue] = Next_Service_Time;
-        
     }
-    
-    else
-    {
-        Server_Status = BUSY;
-        
-        Next_Completion_Time = Clock + Next_Service_Time;
-        
-        // (TODO:thapaliya) Add to array of completion time
-        
-        Progres_Arrival_Time = Next_Arrival_Time;
-        
-        Progres_Completion_Time = Next_Completion_Time;
-        
-    }
-    
     Next_Arrival_Time = Clock + expon(Mean_interArrival_Time);
-    
     Next_Service_Time = expon(Mean_service_Time);
-    
-    
 }
 /////////////////////////////////////////////////////////////////////////////
 // Completion Customer Function
@@ -203,11 +214,13 @@ void Completition()
     Total_Flow_Time+= ( Progres_Completion_Time - Progres_Arrival_Time );
     
     
+    // (TODO: take lowest value in array and choose that for completion event)
+    
     if (Number_in_Queue == 0)
     {
-        Server_Status= IDLE;
-        
-        Next_Completion_Time = 1.0e+10;      // High Value
+        Track_State[(int)Next_Completion_Time_Index] = IDLE; // (TODO:that paricular index for that value will be IDLE)
+        Completion_Time[(int)Next_Completion_Time_Index] = 1.0e+10; // High Value  (TODO:that paricular index for that value will be set to very high val)
+        Next_Completion_Time = 1.0e+10;
     }
     
     else
@@ -216,11 +229,19 @@ void Completition()
         if(choice==2)
             Search_Min(Time_Arrival,Service_Time);    // Minimum Processing Time
         
+        
         Delay= Clock - Time_Arrival[1];
         
         Waiting_Time+= Delay;
         
-        Next_Completion_Time = Clock + Service_Time[1];
+        
+        Completion_Time[(int)Next_Completion_Time_Index] = Clock + Service_Time[1];
+        
+        std::cout<<Clock + Service_Time[1]<<"yoyoyo"<<std::endl;
+        
+        Next_Completion_Time = Clock + Service_Time[1]; // (TODO:upadte at empty place in array which is free)
+        Completion_Time[(int)Next_Completion_Time_Index] = Clock + Service_Time[1];
+        
         
         Progres_Arrival_Time = Time_Arrival[1];
         
