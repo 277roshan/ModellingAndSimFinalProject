@@ -114,6 +114,10 @@ void Timing()
 {
     Type_Next_Event = 0;
     
+    
+    
+    //(TODO: thapaliya)Next_Completion_Time needs to be determined from the array
+    
     if(Next_Arrival_Time < Next_Completion_Time)
     {
         
@@ -145,6 +149,8 @@ void Timing()
 
 void Arrival()
 {
+    
+    // (TODO:thapaliya) Server status for each server needs to be busy then add in queue
     if (Server_Status == BUSY)
     {
         ++Number_in_Queue;
@@ -169,6 +175,8 @@ void Arrival()
         Server_Status = BUSY;
         
         Next_Completion_Time = Clock + Next_Service_Time;
+        
+        // (TODO:thapaliya) Add to array of completion time
         
         Progres_Arrival_Time = Next_Arrival_Time;
         
